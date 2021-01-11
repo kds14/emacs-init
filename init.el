@@ -1,10 +1,11 @@
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
  
-;; can't refresh packages without this 
+;; Fixes some bugs that prevent package refresh 
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-;;(package-refresh-contents)
+(setq package-check-signature nil)
+(package-refresh-contents)
 
 (unless (package-installed-p 'evil)
   (package-install 'evil))
@@ -17,38 +18,29 @@
  
 (unless (package-installed-p 'projectile)
   (package-install 'projectile))
+
+(unless (package-installed-p 'undo-tree)
+  (package-install 'undo-tree))
+
+(unless (package-installed-p 'company)
+  (package-install 'company))
  
-(unless (package-installed-p 'neotree)
-  (package-install 'neotree))
- 
+
 ;; Required to avoid string-trim being void in projectile
 (require 'subr-x)
  
-(require 'which-key)
-(which-key-mode 1)
- 
-(require 'evil)
-(evil-mode 1)
- 
-(require 'ivy)
-(ivy-mode 1)
- 
-(require 'projectile) 
-(projectile-mode 1)
+(which-key-mode)
+(evil-mode)
+(ivy-mode)
+
+(projectile-mode)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
- 
-(require 'neotree)
-(global-set-key [f8] 'neotree-toggle)
-(setq neo-smart-open t)
-;; Open neotree when projectile switches project
-(setq projectile-switch-project-action 'neotree-projectile-action)
-;; Remap evil keys for neotree buffer
-(add-hook 'neotree-mode-hook
-	  (lambda ()
-	    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
-	    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
-(define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
+
+;; Use undo tree for evil redo (Ctrl+R)
+(global-undo-tree-mode)
+(evil-set-undo-system 'undo-tree)
+
+(add-hook 'after-init-hook 'global-company-mode)
  
 ;; Set backup files to single directory
 (let ((dir "~/.emacs.d/backups/"))
@@ -64,17 +56,46 @@
 (scroll-bar-mode -1)
 ;; Show line number
 (line-number-mode 1)
+;; Show line number
+(column-number-mode 1)
+;; Show line numbers on side
+(global-display-line-numbers-mode 1)
 ;; Highlight matching paren
 (show-paren-mode 1)
-;; 8 tab width
+
+;; So I can use big TAGS files
+(setq large-file-warning-threshold 100000000)
+(setq tags-add-tables nil)
+
+;; eshell shortcut
+(global-set-key (kbd "C-c e") 'eshell)
+;; open init.el shortcut
+(defun open-init ()
+  "Edit emacs init file"
+  (interactive)
+  (find-file user-init-file))
+(global-set-key (kbd "C-c i") 'open-init)
+
+;; 4 spaces for indent
+;(setq-default indent-tabs-mode nil)
+;(setq-default tab-width 4)
+;(setq tab-stop-list (number-sequence 4 200 4))
+
+;; 8 width tabs for indent
 (setq-default tab-width 8)
- 
+(setq tab-stop-list (number-sequence 8 200 8))
+
+(setq indent-line-function 'insert-tab)
+(setq c-default-style "linux")
+(setq c-basic-offset 8)
+(c-set-offset 'comment-intro 0)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(which-key)))
+ '(package-selected-packages '(undo-tree which-key)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -82,4 +103,4 @@
  ;; If there is more than one, they won't work right.
  )
 
-(add-hook 'after-init-hook (prin1 (format "Boot time: %s" emacs-init-time)))
+;;(add-hook 'after-init-hook (prin1 (format "Boot time: %s" emacs-init-time)))
