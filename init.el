@@ -7,6 +7,7 @@
 (setq package-check-signature nil)
 (package-refresh-contents)
 
+;; Install packages if not installed
 (unless (package-installed-p 'evil)
   (package-install 'evil))
  
@@ -24,11 +25,15 @@
 
 (unless (package-installed-p 'company)
   (package-install 'company))
+
+(unless (package-installed-p 'org)
+  (package-install 'org))
  
 
 ;; Required to avoid string-trim being void in projectile
 (require 'subr-x)
- 
+
+;; Enable some modes
 (which-key-mode)
 (evil-mode)
 (ivy-mode)
@@ -47,6 +52,15 @@
   (unless (file-directory-p dir)
     (make-directory dir t)))
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
+
+;; Add org mode directory
+(let ((dir "~/org/"))
+  (unless (file-directory-p dir)
+    (make-directory dir t))
+  (setq org-directory dir))
+
+;; Make timestamp when marking things as done in org-mode
+(setq org-log-done 'time)
  
 ;; Disable start screen
 (setq inhibit-startup-message t)
@@ -69,12 +83,17 @@
 
 ;; eshell shortcut
 (global-set-key (kbd "C-c e") 'eshell)
+
 ;; open init.el shortcut
 (defun open-init ()
   "Edit emacs init file"
   (interactive)
   (find-file user-init-file))
 (global-set-key (kbd "C-c i") 'open-init)
+
+(setq indent-line-function 'insert-tab)
+(setq c-default-style "linux")
+(c-set-offset 'comment-intro 0)
 
 ;; 4 spaces for indent
 ;(setq-default indent-tabs-mode nil)
@@ -84,11 +103,7 @@
 ;; 8 width tabs for indent
 (setq-default tab-width 8)
 (setq tab-stop-list (number-sequence 8 200 8))
-
-(setq indent-line-function 'insert-tab)
-(setq c-default-style "linux")
 (setq c-basic-offset 8)
-(c-set-offset 'comment-intro 0)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
