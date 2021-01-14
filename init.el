@@ -28,7 +28,6 @@
 
 (unless (package-installed-p 'org)
   (package-install 'org))
- 
 
 ;; Required to avoid string-trim being void in projectile
 (require 'subr-x)
@@ -76,6 +75,8 @@
 (global-display-line-numbers-mode 1)
 ;; Highlight matching paren
 (show-paren-mode 1)
+;; Automatically update files if they change
+(global-auto-revert-mode t)
 
 ;; So I can use big TAGS files
 (setq large-file-warning-threshold 100000000)
@@ -105,17 +106,8 @@
 (setq tab-stop-list (number-sequence 8 200 8))
 (setq c-basic-offset 8)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages '(undo-tree which-key)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-;;(add-hook 'after-init-hook (prin1 (format "Boot time: %s" emacs-init-time)))
+;; Use custom file instead of custom-set-variables, custom-set-faces
+(setq custom-file "~/.emacs.d/custom.el")
+(unless (file-exists-p custom-file)
+  (make-empty-file custom-file t))
+(load custom-file)
